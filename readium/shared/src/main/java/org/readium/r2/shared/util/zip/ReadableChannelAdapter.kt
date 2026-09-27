@@ -64,7 +64,9 @@ internal class ReadableChannelAdapter(
                 }
 
                 val available = size - position
-                val toBeRead = dst.remaining().coerceAtMost(available.toInt())
+                // Capped as a Long before narrowing: more than Int.MAX_VALUE bytes left (a resource
+                // over 2 GB read from near its start) would otherwise wrap negative and fail below.
+                val toBeRead = available.coerceAtMost(dst.remaining().toLong()).toInt()
                 check(toBeRead > 0)
                 val bytes = readable.read(position until position + toBeRead)
                     .mapFailure(wrapError)

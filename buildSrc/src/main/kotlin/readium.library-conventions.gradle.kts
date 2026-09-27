@@ -98,5 +98,8 @@ mavenPublishing {
     }
 
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
-    signAllPublications()
+    // Spiracle fork: `-PskipSigning` publishes unsigned, for a local build of a patched module.
+    if (!providers.gradleProperty("skipSigning").isPresent) {
+        signAllPublications()
+    }
 }
